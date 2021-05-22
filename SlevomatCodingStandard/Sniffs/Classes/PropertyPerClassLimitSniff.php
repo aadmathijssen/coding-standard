@@ -6,6 +6,7 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use SlevomatCodingStandard\Helpers\ClassHelper;
 use SlevomatCodingStandard\Helpers\SniffSettingsHelper;
+use function count;
 use function sprintf;
 use const T_ANON_CLASS;
 use const T_CLASS;
@@ -34,7 +35,7 @@ final class PropertyPerClassLimitSniff implements Sniff
 	 */
 	public function process(File $file, $classPointer): void
 	{
-		$propertiesCount = ClassHelper::getPropertiesCount($file, $classPointer);
+		$propertiesCount = count(ClassHelper::getPropertyPointers($file, $classPointer));
 
 		if ($propertiesCount <= SniffSettingsHelper::normalizeInteger($this->maxPropertyCount)) {
 			return;
