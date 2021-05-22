@@ -30,26 +30,23 @@ final class PropertyPerClassLimitSniff implements Sniff
 
 	/**
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
-	 * @param File $file
+	 * @param File $phpcsFile
 	 * @param int $classPointer
 	 */
-	public function process(File $file, $classPointer): void
+	public function process(File $phpcsFile, $classPointer): void
 	{
-		$propertiesCount = count(ClassHelper::getPropertyPointers($file, $classPointer));
-
-		if ($propertiesCount <= SniffSettingsHelper::normalizeInteger($this->maxPropertyCount)) {
+		$maxPropertyCount = SniffSettingsHelper::normalizeInteger($this->maxPropertyCount);
+		$numberOfProperties = count(ClassHelper::getPropertyPointers($phpcsFile, $classPointer));
+		if ($numberOfProperties <= $maxPropertyCount) {
 			return;
 		}
-
-		$tokenType = $file->getTokens()[$classPointer]['content'];
 		$errorMessage = sprintf(
-			'"%s" has too many properties: %d. Can be up to %d properties.',
-			$tokenType,
-			$propertiesCount,
-			$this->maxPropertyCount
+			'%s has too many properties: %d. Can be up to %d properties.',
+			$phpcsFile->getTokens()[$classPointer]['content'],
+			$numberOfProperties,
+			$maxPropertyCount
 		);
-
-		$file->addError($errorMessage, $classPointer, self::CODE_PROPERTY_PER_CLASS_LIMIT);
+		$phpcsFile->addError($errorMessage, $classPointer, self::CODE_PROPERTY_PER_CLASS_LIMIT);
 	}
 
 }
